@@ -90,7 +90,7 @@
 .card img {
   border-radius: 50%;
   margin-bottom: 15px;
-  width: 150px; /* 원하는 너비 */
+  width: 110px; /* 원하는 너비 */
   height: auto; /* 비율 유지 */
   border-radius: 10px; /* 선택 사항: 둥근 모서리 */
 }
