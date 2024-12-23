@@ -1,17 +1,16 @@
 import { useNavigate, Link } from 'react-router-dom';
-import '../App.css';
 import { useState } from "react";
+import Header from './header'; // Header 컴포넌트 import
 
 function HomePage() {
   const navigate = useNavigate();
   const [transcription, setTranscription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0); // 진행률 상태
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   const handleFileUpload = async (file) => {
     if (file) {
-      console.log("Uploaded file:", file.name);
-      setTranscription(""); // 기존 결과 초기화
+      setTranscription("");
       setLoadingProgress(0);
       setLoading(true);
 
@@ -19,14 +18,13 @@ function HomePage() {
       const fakeProgress = setInterval(() => {
         setLoadingProgress((prev) => {
           if (prev >= 90) {
-            clearInterval(fakeProgress); // 최대 90%까지 진행
+            clearInterval(fakeProgress);
             return 90;
           }
-          return prev + 10; // 10%씩 증가
+          return prev + 10;
         });
       }, 500);
-      
-      // FormData 생성
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -56,9 +54,8 @@ function HomePage() {
   };
 
   const handleDrop = (event) => {
-    event.preventDefault(); // 기본 동작 방지
-    event.stopPropagation(); // 이벤트 전파 방지
-    const files = event.dataTransfer?.files; // 안전하게 dataTransfer 접근
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       const file = files[0];
       if (file.type.startsWith('audio/')) {
@@ -70,8 +67,7 @@ function HomePage() {
   };
 
   const handleDragOver = (event) => {
-    event.preventDefault(); // 기본 동작 방지
-    event.stopPropagation(); // 이벤트 전파 방지
+    event.preventDefault();
   };
 
   // 텍스트 파일 다운로드 함수
@@ -86,127 +82,84 @@ function HomePage() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {/* Header Section */}
-      <header className="App-header">
-        <div className="logo">(KO) my project</div>
-        <nav className="nav-menu">
-          <Link to="/get-started">가이드</Link>
-          <a href="#github">요금제</a>
-          <a href="#designers">자주 묻는 질문</a>
-          <a href="#documentation" className="highlighted">로그인</a>
-        </nav>
-      </header>
+      <Header /> {/* 재사용 가능 Header 컴포넌트 */}
 
       {/* Main Hero Section */}
-      <main className="App-main">
-        <section className="hero">
-          <h1>음성을 텍스트로</h1>
-          <p>모든 음성 파일을 텍스트로 변환하세요.</p>
+      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 text-center">
+        <section className="mb-10">
+          <h1 className="text-4xl font-bold mb-4">음성을 텍스트로</h1>
+          <p className="text-lg">모든 음성 파일을 텍스트로 변환하세요.</p>
         </section>
 
         {/* Transcription Result Section */}
         {loading ? (
-          <div style={{ marginTop: '20px' }}>
-            <p>변환 중입니다... 잠시만 기다려 주세요.</p>
-            <div style={{
-              width: '100%',
-              maxWidth: '400px',
-              height: '20px',
-              backgroundColor: '#eee',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              margin: '10px auto'
-            }}>
-              <div style={{
-                width: `${loadingProgress}%`,
-                height: '100%',
-                backgroundColor: '#007bff',
-                transition: 'width 0.5s ease-in-out'
-              }} />
+          <div className="w-full max-w-lg mx-auto text-center">
+            <p className="mb-4">변환 중입니다... 잠시만 기다려 주세요.</p>
+            <div className="relative w-full h-5 bg-gray-300 rounded">
+              <div
+                className="absolute h-full bg-blue-500 transition-all"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
             </div>
-            <p>{loadingProgress}% 완료</p>
+            <p className="mt-2 text-sm text-gray-700">{loadingProgress}% 완료</p>
           </div>
         ) : transcription ? (
-          <div style={{ marginTop: '20px', marginBottom: '20px', padding: '10px', backgroundColor: '#f3f3f3', borderRadius: '5px' }}>
-            <h3>변환된 텍스트:</h3>
-            <p>{transcription}</p>
-            <button 
-              onClick={handleDownload} 
-              style={{
-                marginTop: '10px',
-                padding: '10px 15px',
-                backgroundColor: '#007bff',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
+          <div className="bg-white p-4 rounded shadow-lg w-full max-w-lg mx-auto">
+            <h3 className="font-bold text-lg mb-2">변환된 텍스트:</h3>
+            <p className="text-sm text-gray-700 mb-4">{transcription}</p>
+            <button
+              onClick={handleDownload}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               다운로드
             </button>
           </div>
         ) : null}
 
-        {/* Cards Section */}
-        <section className="cards">
-          <div
-            className="card"
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            style={{
-              border: '2px dashed #ccc',
-              borderRadius: '10px',
-              padding: '20px',
-              textAlign: 'center',
-              backgroundColor: '#f9f9f9',
-            }}
+        {/* Upload Section */}
+        <section
+          className="border-2 border-dashed border-gray-400 rounded-lg p-6 bg-white shadow w-full max-w-lg text-center mt-6"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <img
+            src="/img/img_download.png"
+            alt="Drag and drop area"
+            className="mx-auto mb-4 w-16 h-16"
+          />
+          <h3 className="text-lg font-bold mb-2">MP3 TO TEXT</h3>
+          <p className="text-sm text-gray-600 mb-4">여기로 파일을 끌어다 놓으세요.</p>
+          <label
+            htmlFor="file-upload"
+            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
           >
-            <img src="/img/img_download.png" alt="Avatar" className="card-img" />
-            <h3>MP3 TO TEXT</h3>
-            <p>여기로 파일을 끌어다 놓으세요.</p>
-            <label htmlFor="card-file-upload" className="btn-follow">
-              업로드
-            </label>
-            <input
-              id="card-file-upload"
-              type="file"
-              accept=".mp3, audio/*"
-              style={{ display: 'none' }}
-              onChange={(e) => handleFileUpload(e.target.files[0])}
-            />
-          </div>
+            업로드
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept=".mp3, audio/*"
+            className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files[0])}
+          />
         </section>
       </main>
 
       {/* Footer Section */}
-      <footer style={{ 
-        backgroundColor: '#000',
-        color: '#fff',
-        textAlign: 'center',
-        padding: '20px',
-        fontSize: '14px',
-        lineHeight: '1.6',
-        position: 'fixed',       // 화면에 고정
-        bottom: '0',             // 화면 맨 아래에 붙음
-        left: '0',               // 왼쪽 끝 정렬
-        width: '100%',           // 전체 가로폭 차지
-      }}>
+      <footer className="bg-black text-white py-6 text-center">
         <p>&copy; 2024 My Project. All Rights Reserved.</p>
         <p>
           문의사항: 
-          <a 
-            href="mailto:akfls367@naver.com" 
-            style={{ 
-              color: '#fff', 
-              textDecoration: 'underline'
-            }}
+          <a
+            href="mailto:akfls367@naver.com"
+            className="underline hover:text-gray-400"
           >
             akfls367@naver.com
           </a>
         </p>
       </footer>
-
     </div>
   );
 }
