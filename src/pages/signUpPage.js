@@ -1,19 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const SignUpPage = () => {
+
+const SignUpPage =  () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {
-    if (name && email && password) {
-      alert("회원가입 성공!");
-      navigate("/loginPage"); // 회원가입 후 로그인 페이지로 이동
-    } else {
+  const handleSignUp = async () => {
+    if (!name || !email || !password) {
       alert("모든 정보를 입력해주세요.");
+      return;
     }
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/register", {
+        name,
+        email,
+        password,
+      });
+      alert(response.data.message);
+    } catch (error) {
+      console.error("회원가입 실패:", error.response?.data?.error || error.message);
+      alert("회원가입 중 오류가 발생했습니다.");
+    }
+
+
   };
 
   return (
@@ -56,12 +70,12 @@ const SignUpPage = () => {
             회원가입
           </button>
           <div className="mt-4 text-sm">
-            <a
-              href="/loginPage"
-              className="text-blue-500 hover:underline"
+          <span
+              onClick={() => navigate("/loginPage")}
+              className="text-blue-500 hover:underline cursor-pointer"
             >
               이미 계정이 있으신가요? 로그인
-            </a>
+            </span>
           </div>
         </div>
       </div>

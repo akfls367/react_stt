@@ -3,12 +3,24 @@ const multer = require("multer");
 const axios = require("axios");
 const fs = require("fs");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const authController = require("./controllers/authController");
 
 const app = express();
 const PORT = 5000;
 
 // CORS 허용
 app.use(cors());
+app.use(bodyParser.json());
+
+// // 라우트 설정
+// app.post("/api/register", authController.register);
+// app.post("/api/login", authController.login);
+
+// // 서버 실행
+// app.listen(PORT, () => {
+//   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
+// });
 
 // 파일 저장 설정
 const upload = multer({ dest: "uploads/" });

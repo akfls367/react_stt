@@ -85,9 +85,3 @@ MY-REACT-APP/
 ├── README.md               # 프로젝트 설명 파일
 └── test.mp3                # 테스트용 오디오 파일
 ```
-
----
-
-## 라이선스 (License)
-
-이 프로젝트는 [MIT License](LICENSE)를 따릅니다.
