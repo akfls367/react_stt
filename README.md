@@ -11,6 +11,11 @@
 
 ---
 
+## 스크린샷
+
+### 메인 화면
+![메인 화면](https://github.com/akfls367/react_stt/blob/master/screenshots/react_stt_sam.gif)
+
 ## 기술 스택 (Tech Stack)
 
 - **Frontend**: React
@@ -85,3 +90,9 @@ MY-REACT-APP/
 ├── README.md               # 프로젝트 설명 파일
 └── test.mp3                # 테스트용 오디오 파일
 ```
+
+---
+
+## 라이선스 (License)
+
+이 프로젝트는 [MIT License](LICENSE)를 따릅니다.
