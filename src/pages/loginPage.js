@@ -1,18 +1,29 @@
 import React, { useState } from "react";
 import { useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (email === "test@example.com" && password === "password123") {
-      alert("로그인 성공!");
-      navigate("/home"); // 로그인 성공 시 이동할 페이지
-    } else {
-      alert("잘못된 이메일 또는 비밀번호입니다.");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("모든 정보를 입력해주세요.");
+      return;
     }
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password
+      });
+      alert(response.data.message);
+    } catch (error) {
+      console.error("로그인 실패:", error.response?.data?.error || error.message);
+      alert("로그인 중 오류가 발생했습니다.");
+    }
+    
   };
 
   return (

@@ -13,11 +13,11 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// // 라우트 설정
-// app.post("/api/register", authController.register);
-// app.post("/api/login", authController.login);
+// 라우트 설정
+app.post("/api/register", authController.register);
+app.post("/api/login", authController.login);
 
-// // 서버 실행
+// 서버 실행
 // app.listen(PORT, () => {
 //   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 // });
