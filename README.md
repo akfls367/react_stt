@@ -14,7 +14,7 @@
 ## 스크린샷
 
 ### 메인 화면
-![메인 화면](https://github.com/akfls367/react_stt/blob/master/screenshots/react_stt_sam.gif)
+![메인 화면](https://github.com/akfls367/react_stt/blob/main/screenshots/react_stt_sam.gif)
 
 ## 기술 스택 (Tech Stack)
 
