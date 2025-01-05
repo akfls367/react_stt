@@ -1,6 +1,43 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from './header'; // Header 컴포넌트 import
+
+function FadeInSection({ children }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div
+      ref={sectionRef}
+      className={`transition-opacity duration-1000 ease-in-out transform ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
 
 function HomePage() {
   const navigate = useNavigate();
@@ -70,7 +107,6 @@ function HomePage() {
     event.preventDefault();
   };
 
-  // 텍스트 파일 다운로드 함수
   const handleDownload = () => {
     const blob = new Blob([transcription], { type: 'text/plain' });
     const link = document.createElement('a');
@@ -87,63 +123,95 @@ function HomePage() {
       <Header /> {/* 재사용 가능 Header 컴포넌트 */}
 
       {/* Main Hero Section */}
-      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 text-center">
-        <section className="mb-10">
-          <h1 className="text-4xl font-bold mb-4">음성을 텍스트로</h1>
-          <p className="text-lg">모든 음성 파일을 텍스트로 변환하세요.</p>
-        </section>
-
-        {/* Transcription Result Section */}
-        {loading ? (
-          <div className="w-full max-w-lg mx-auto text-center">
-            <p className="mb-4">변환 중입니다... 잠시만 기다려 주세요.</p>
-            <div className="relative w-full h-5 bg-gray-300 rounded">
-              <div
-                className="absolute h-full bg-blue-500 transition-all"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <p className="mt-2 text-sm text-gray-700">{loadingProgress}% 완료</p>
+      <main className="flex-grow flex flex-col items-center text-center">
+        {/* Hero Section과 Upload Section을 포함하는 회색 배경 */}
+        <section className="w-full bg-gray-100">
+          <div className="mb-5 mt-20">
+            <h1 className="text-5xl font-bold mb-4">음성을 텍스트로</h1>
+            <p className="text-lg">모든 음성 파일을 텍스트로 변환하세요.</p>
           </div>
-        ) : transcription ? (
-          <div className="bg-white p-4 rounded shadow-lg w-full max-w-lg mx-auto">
-            <h3 className="font-bold text-lg mb-2">변환된 텍스트:</h3>
-            <p className="text-sm text-gray-700 mb-4">{transcription}</p>
-            <button
-              onClick={handleDownload}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              다운로드
-            </button>
-          </div>
-        ) : null}
 
-        {/* Upload Section */}
-        <section
-          className="border-2 border-dashed border-gray-400 rounded-lg p-6 bg-white shadow w-full max-w-lg text-center mt-6"
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          <img
-            src="/img/img_download.png"
-            alt="Drag and drop area"
-            className="mx-auto mb-4 w-16 h-16"
-          />
-          <h3 className="text-lg font-bold mb-2">MP3 TO TEXT</h3>
-          <p className="text-sm text-gray-600 mb-4">여기로 파일을 끌어다 놓으세요.</p>
-          <label
-            htmlFor="file-upload"
-            className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
+          {/* Upload Section */}
+          <section
+            className="border-2 border-dashed border-gray-400 rounded-lg p-6 bg-white shadow w-full max-w-lg mx-auto text-center mt-6 mb-10"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
           >
-            업로드
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            accept=".mp3, audio/*"
-            className="hidden"
-            onChange={(e) => handleFileUpload(e.target.files[0])}
-          />
+            <img
+              src="/img/img_download.png"
+              alt="Drag and drop area"
+              className="mx-auto mb-4 w-16 h-16"
+            />
+            <h3 className="text-lg font-bold mb-2">MP3 TO TEXT</h3>
+            <p className="text-sm text-gray-600 mb-4">여기로 파일을 끌어다 놓으세요.</p>
+            <label
+              htmlFor="file-upload"
+              className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
+            >
+              업로드
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept=".mp3, audio/*"
+              className="hidden"
+              onChange={(e) => handleFileUpload(e.target.files[0])}
+            />
+          </section>
+
+          {/* Transcription Result Section */}
+          {loading ? (
+            <div className="w-full max-w-lg mx-auto text-center mb-10">
+              <p className="mb-4">변환 중입니다... 잠시만 기다려 주세요.</p>
+              <div className="relative w-full h-5 bg-gray-300 rounded">
+                <div
+                  className="absolute h-full bg-blue-500 transition-all"
+                  style={{ width: `${loadingProgress}%` }}
+                ></div>
+              </div>
+              <p className="mt-2 text-sm text-gray-700">{loadingProgress}% 완료</p>
+            </div>
+          ) : transcription ? (
+            <div className="bg-white p-4 rounded shadow-lg w-full max-w-lg mx-auto mb-10">
+              <h3 className="font-bold text-lg mb-2">변환된 텍스트:</h3>
+              <p className="text-sm text-gray-700 mb-4">{transcription}</p>
+              <button
+                onClick={handleDownload}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                다운로드
+              </button>
+            </div>
+          ) : null}
+        </section>
+        
+        {/* 카드 섹션 포함 */}
+        <section className="bg-white w-full">
+          <div className="mt-16 mb-16 w-full max-w-7xl px-4 mx-auto">
+            <h2 className="text-2xl font-bold text-gray-800 text-left mb-6">
+              추천 기능
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <FadeInSection key={item}>
+                  <div className="bg-white shadow-lg rounded-lg p-8 text-left">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      기능 {item}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      이 기능은 사용자가 음성을 텍스트로 변환할 수 있는 강력한 기능을 제공합니다.
+                    </p>
+                    <button
+                      onClick={() => navigate(`/feature-${item}`)}
+                      className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                      자세히 보기
+                    </button>
+                  </div>
+                </FadeInSection>
+              ))}
+            </div>
+          </div>
         </section>
       </main>
 
