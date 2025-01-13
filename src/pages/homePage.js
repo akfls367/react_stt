@@ -213,6 +213,94 @@ function HomePage() {
             </div>
           </div>
         </section>
+
+        <section className="bg-gray-100 w-full py-10">
+          <div className="max-w-lg mx-auto p-6 bg-white rounded shadow">
+            <h2 className="text-2xl font-bold text-center mb-4">문의하기</h2>
+            <p className="text-center text-gray-600 mb-6">
+              저희에게 전하고 싶은 말씀을 작성해주세요. 아래 폼을 작성해 제출하시면 됩니다.
+            </p>
+            <form
+              className="space-y-4"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = {
+                  firstName: formData.get("firstName"),
+                  email: formData.get("email"),
+                  phone: formData.get("phone"),
+                  message: formData.get("message"),
+                };
+
+                try {
+                  const response = await fetch("http://localhost:5000/send-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                  });
+
+                  if (response.ok) {
+                    alert("메시지가 성공적으로 전송되었습니다!");
+                  } else {
+                    alert("메시지 전송에 실패했습니다.");
+                  }
+                } catch (error) {
+                  console.error("Error sending message:", error);
+                  alert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+              }}
+            >
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="이름"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              </div>
+              <input
+                type="email"
+                name="email"
+                placeholder="이메일 (you@company.com)"
+                required
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <input
+                type="tel"
+                name="phone"
+                placeholder="전화번호"
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <textarea
+                name="message"
+                placeholder="메시지"
+                rows="4"
+                required
+                className="w-full p-2 border border-gray-300 rounded"
+              ></textarea>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  required
+                  className="mr-2"
+                />
+                <label className="text-sm text-gray-600">
+                  개인정보 처리 방침에 동의합니다.
+                </label>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+              >
+                메시지 전송
+              </button>
+            </form>
+          </div>
+        </section>
+
+
+
       </main>
 
       {/* Footer Section */}

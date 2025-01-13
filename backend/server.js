@@ -5,6 +5,7 @@ const fs = require("fs");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const authController = require("./controllers/authController");
+const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = 5000;
@@ -87,5 +88,41 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "파일 처리 중 문제가 발생했습니다." });
   }
 });
+
+// 이메일 전송 라우트 -- 네이버 앱 비밀번호 확인해야함.
+app.post("/send-email", async (req, res) => {
+  const { firstName, email, phone, message } = req.body;
+
+  if (!firstName || !email || !message) {
+    return res.status(400).json({ error: "모든 필드를 입력해주세요." });
+  }
+
+  // 이메일 전송 설정
+  const transporter = nodemailer.createTransport({
+    host: "smtp.naver.com", // 네이버 SMTP 서버 주소
+    port: 465, // SSL 포트
+    secure: true, // SSL 사용
+    auth: {
+      user: "akfls367@naver.com", // 본인 이메일
+      pass: "", // 이메일 비밀번호 또는 앱 비밀번호
+    },
+  });
+
+  const mailOptions = {
+    from: "akfls367@naver.com",
+    to: "akfls367@naver.com", // 수신 이메일
+    subject: `문의사항: ${firstName}`,
+    text: `이름: ${firstName}\n이메일: ${email}\n전화번호: ${phone || "미입력"}\n메시지: ${message}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "이메일이 성공적으로 전송되었습니다." });
+  } catch (error) {
+    console.error("이메일 전송 오류:", error);
+    res.status(500).json({ error: "이메일 전송에 실패했습니다." });
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
